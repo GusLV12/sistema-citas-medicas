@@ -4,7 +4,7 @@ Consulta de fuentes: 03/10/2026. [Reporte](../../practicas/P02/README.md) · [co
 
 ## Contratos
 
-Las PNG corresponden al documento oficial español proporcionado, edición 01/09/2026. La portada muestra la fecha y cada conjunto contiene la cláusula del servicio correspondiente. Los identificadores Alumno2/Alumno3 se actualizarán con los datos del equipo.
+Las PNG corresponden al documento oficial español, edición 01/09/2026. La portada muestra la fecha y cada conjunto contiene la cláusula del servicio correspondiente. Los identificadores Alumno2/Alumno3 se actualizarán con los datos del equipo.
 
 | Evidencia | Archivos | Qué respalda |
 |---|---|---|
@@ -28,13 +28,13 @@ Los [extractos en inglés](fuentes/extractos-sla.md) incluyen DNS y los cuatro s
 
 ## Costos y cálculos
 
-- [Calculadora SQL base](calculadora_sql_base.jpg) y [exportación original](calculadora_sql_base.xlsx).
-- [Calculadora SQL redundante](calculadora_sql_redundante.jpg) y [configuración leída del navegador](fuentes/calculadora_sql_redundante.txt).
-- [Cálculos completos](calculos.md), [resultados JSON](calculos.json) y [script reproducible](recalcular.py).
+- [Calculadora de precios de Azure](https://azure.microsoft.com/en-us/pricing/calculator/): reproducir SQL base y redundante con los supuestos de [costos](../../practicas/P02/costos.md).
+- [Precios de Azure SQL Database](https://azure.microsoft.com/en-us/pricing/details/azure-sql-database/single/): consultar tarifas y opciones de SQL.
+- [Cálculos completos](calculos.md) y [resultados JSON](calculos.json).
 - [Medidores usados](fuentes/medidores-utilizados.md), con referencia a los JSON oficiales que conservan URL y fecha. `precios_lb.json` es la respuesta vacía del filtro regional descartado; la tarifa utilizada es `precios_lb_global.json`.
-- [Diagrama definitivo](../../docs/arquitectura/arquitectura-p02.md), en Mermaid con leyenda de flujos. Las vistas mínimas en `assets/` no son la evidencia final de dependencias.
+- [Diagrama definitivo](../../docs/arquitectura/arquitectura-p02.md), en Mermaid con leyenda de flujos.
 
-Las capturas de calculadora corresponden a SQL. Las fórmulas de disponibilidad y costo están disponibles en Markdown y Python.
+Las fórmulas de disponibilidad y costo están disponibles en Markdown.
 
 ## Plan de medición
 

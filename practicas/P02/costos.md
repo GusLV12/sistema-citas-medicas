@@ -56,9 +56,9 @@ La [tarifa de Functions](https://azure.microsoft.com/en-us/pricing/details/funct
 
 ## Reproducción y evidencia
 
-Desde la raíz: `python evidencias/P02/recalcular.py`. Usa `Decimal`, no consulta Internet y regenera [calculos.md](../../evidencias/P02/calculos.md) y [calculos.json](../../evidencias/P02/calculos.json). Los JSON de tarifas conservan la consulta original, fecha y medidores; [medidores utilizados](../../evidencias/P02/fuentes/medidores-utilizados.md) permite localizar los precios. No se reemplazan tarifas históricas con las del día al recalcular.
+Los [cálculos](../../evidencias/P02/calculos.md) y los [resultados](../../evidencias/P02/calculos.json) conservan las fórmulas, supuestos y resultados utilizados. Los JSON de tarifas mantienen la consulta original, fecha y medidores; [medidores utilizados](../../evidencias/P02/fuentes/medidores-utilizados.md) permite localizar los precios. No se reemplazan tarifas históricas con las del día de revisión.
 
-Evidencia real: [captura SQL base](../../evidencias/P02/calculadora_sql_base.jpg), [exportación oficial base](../../evidencias/P02/calculadora_sql_base.xlsx), [captura SQL redundante](../../evidencias/P02/calculadora_sql_redundante.jpg) y [lectura de configuración redundante](../../evidencias/P02/fuentes/calculadora_sql_redundante.txt). Estas capturas respaldan SQL; los demás renglones usan la API oficial guardada. No se presentan como exportación de la calculadora de toda la arquitectura.
+La configuración de SQL puede reproducirse en la [Calculadora de precios de Azure](https://azure.microsoft.com/en-us/pricing/calculator/) con East US, Single Database, General Purpose, Gen5, 2 vCore, 32 GB de datos, 9.6 GB de log y 730 horas. Para el escenario redundante se selecciona Zone Redundant. La [página de precios de Azure SQL Database](https://azure.microsoft.com/en-us/pricing/details/azure-sql-database/single/) complementa las tarifas del servicio.
 
 ## Alternativa de residencia en México (pregunta 3)
 

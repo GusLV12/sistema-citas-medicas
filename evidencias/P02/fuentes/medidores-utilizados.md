@@ -2,7 +2,7 @@
 
 Fuente: respuestas de Azure Retail Prices API guardadas el 03/10/2026. Índice desde cero dentro de `Items`. Selección documentada el 04/10/2026; no se volvió a cotizar.
 
-La licencia SQL de USD 145.95036/mes proviene de la [exportación de calculadora](../calculadora_sql_base.xlsx); no se confunde con el medidor de cómputo. Los tramos de Functions se aplican a consumo bruto para un presupuesto conservador, sin descontar franquicias.
+La licencia SQL de USD 145.95036/mes se consulta al configurar el servicio en la [Calculadora de precios de Azure](https://azure.microsoft.com/en-us/pricing/calculator/); no se confunde con el medidor de cómputo. Los tramos de Functions se aplican a consumo bruto para un presupuesto conservador, sin descontar franquicias.
 
 | Archivo e índice | Producto / SKU | Medidor | Región | Precio USD | Unidad | Inicio del tramo | meterId |
 |---|---|---|---|---:|---|---:|---|

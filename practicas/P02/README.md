@@ -11,9 +11,9 @@ El sistema permite consultar horarios, reservar y cancelar citas y administrar l
 
 La reserva queda confirmada al persistir en SQL, junto con un trabajo pendiente en una tabla outbox. La generación del comprobante es posterior: su fallo no convierte una reserva confirmada en fallida. No se incluyen expedientes clínicos, diagnóstico, pagos, correo ni Kubernetes. App Service y Container Apps no forman parte de esta propuesta.
 
-El [diagrama definitivo y sus flujos](../../docs/arquitectura/arquitectura-p02.md) distingue reserva síncrona y comprobante asíncrono. Las imágenes de arquitectura mínima en `assets/` son vistas preliminares: omiten Functions y no sustituyen este diagrama.
+El [diagrama definitivo y sus flujos](../../docs/arquitectura/arquitectura-p02.md) distingue reserva síncrona y comprobante asíncrono.
 
-Las condiciones contractuales se obtuvieron de los documentos oficiales de Microsoft proporcionados con el proyecto, edición **01/09/2026**, revisada el **03–04/10/2026**. Fuentes: [catálogo oficial de SLA](https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services), [contrato inglés](https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA%28WW%29%28English%29%28September_2026%29%28CR%29.docx) y [evidencias](../../evidencias/P02/README.md).
+Las condiciones contractuales se obtuvieron de los documentos oficiales de Microsoft, edición **01/09/2026**, revisada el **03–04/10/2026**. Fuentes: [catálogo oficial de SLA](https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services), [contrato inglés](https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA%28WW%29%28English%29%28September_2026%29%28CR%29.docx) y [evidencias](../../evidencias/P02/README.md).
 
 ### Tabla 1. Anatomía de los SLA
 
@@ -160,7 +160,7 @@ Se utilizó IA generativa como apoyo para organizar el reporte, revisar fórmula
 
 ## 8. Referencias
 
-1. [Consigna de Práctica 2](../../Practica2_SLA_SLOs_SD_2026.pdf), secciones B1–B4, preguntas 1–6 y rúbrica. Revisada 04/10/2026.
+1. Consigna de Práctica 2 entregada en el curso, secciones B1–B4, preguntas 1–6 y rúbrica. Revisada 04/10/2026.
 2. Microsoft, [SLA for Online Services](https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services), edición 01/09/2026 aportada; secciones General Terms, VM, SQL Database, Storage Accounts, Functions, DNS y Load Balancer. Extracción/revisión 03–04/10/2026; [extractos](../../evidencias/P02/fuentes/extractos-sla.md).
 3. Microsoft, [Azure Retail Prices API](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices) y [calculadora](https://azure.microsoft.com/en-us/pricing/calculator/). Tarifas/evidencias 03/10/2026; [detalle de costos](costos.md).
 4. Microsoft, [Reliability in Azure SQL Database](https://learn.microsoft.com/en-us/azure/reliability/reliability-sql-database), [Azure Functions](https://learn.microsoft.com/en-us/azure/reliability/reliability-functions) y [regiones](https://learn.microsoft.com/en-us/azure/reliability/regions-list). Revisión 04/10/2026.

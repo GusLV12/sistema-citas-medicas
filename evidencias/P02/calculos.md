@@ -1,6 +1,6 @@
 # Cálculos reproducibles de P02
 
-Generado con `python evidencias/P02/recalcular.py`. Tarifas consultadas el 03/10/2026; no son una factura.
+Tarifas consultadas el 03/10/2026; no son una factura.
 
 ## Disponibilidad
 
