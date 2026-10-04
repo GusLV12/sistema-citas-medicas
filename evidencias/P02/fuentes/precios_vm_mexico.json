@@ -1,0 +1,52 @@
+{
+  "fecha_consulta": "2026-10-03",
+  "urls": [
+    "https://prices.azure.com/api/retail/prices?%24filter=serviceName+eq+%27Virtual+Machines%27+and+armRegionName+eq+%27mexicocentral%27+and+armSkuName+eq+%27Standard_B2s%27+and+priceType+eq+%27Consumption%27"
+  ],
+  "Items": [
+    {
+      "currencyCode": "USD",
+      "tierMinimumUnits": 0.0,
+      "retailPrice": 0.0538,
+      "unitPrice": 0.0538,
+      "armRegionName": "mexicocentral",
+      "location": "MX Central",
+      "effectiveStartDate": "2025-10-01T00:00:00Z",
+      "meterId": "d12b8774-fda6-5c12-818c-e2674a8b881b",
+      "meterName": "B2s",
+      "productId": "DZH318Z0BQNH",
+      "skuId": "DZH318Z0BQNH/02HF",
+      "productName": "Virtual Machines BS Series Windows",
+      "skuName": "B2s",
+      "serviceName": "Virtual Machines",
+      "serviceId": "DZH313Z7MMC8",
+      "serviceFamily": "Compute",
+      "unitOfMeasure": "1 Hour",
+      "type": "Consumption",
+      "isPrimaryMeterRegion": true,
+      "armSkuName": "Standard_B2s"
+    },
+    {
+      "currencyCode": "USD",
+      "tierMinimumUnits": 0.0,
+      "retailPrice": 0.0458,
+      "unitPrice": 0.0458,
+      "armRegionName": "mexicocentral",
+      "location": "MX Central",
+      "effectiveStartDate": "2025-10-01T00:00:00Z",
+      "meterId": "dc71d2b4-e9b9-52c0-b60e-facd1540257b",
+      "meterName": "B2s",
+      "productId": "DZH318Z0BQ35",
+      "skuId": "DZH318Z0BQ35/0403",
+      "productName": "Virtual Machines BS Series",
+      "skuName": "B2s",
+      "serviceName": "Virtual Machines",
+      "serviceId": "DZH313Z7MMC8",
+      "serviceFamily": "Compute",
+      "unitOfMeasure": "1 Hour",
+      "type": "Consumption",
+      "isPrimaryMeterRegion": true,
+      "armSkuName": "Standard_B2s"
+    }
+  ]
+}

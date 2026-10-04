@@ -1,0 +1,53 @@
+{
+  "horas_costos": 730,
+  "minutos_ventana_slo": 43200,
+  "flujos": {
+    "agenda_base": {
+      "disponibilidad_pct": "99.8900100",
+      "minutos": "47.5156800"
+    },
+    "agenda_vm_az": {
+      "disponibilidad_pct": "99.970002999900",
+      "minutos": "12.958704043200"
+    },
+    "agenda_sql_zr": {
+      "disponibilidad_pct": "99.89500500",
+      "minutos": "45.35784000"
+    },
+    "agenda_redundante": {
+      "disponibilidad_pct": "99.9750019999500",
+      "minutos": "10.7991360216000"
+    },
+    "comprobante_base": {
+      "disponibilidad_pct": "99.84006499500",
+      "minutos": "69.09192216000"
+    },
+    "comprobante_redundante": {
+      "disponibilidad_pct": "99.845057497500",
+      "minutos": "66.935161080000"
+    },
+    "reserva_y_comprobante_base": {
+      "disponibilidad_pct": "99.74022493000500",
+      "minutos": "112.22283023784000"
+    },
+    "reserva_y_comprobante_redundante": {
+      "disponibilidad_pct": "99.82508948445107497500",
+      "minutos": "75.56134271713561080000"
+    }
+  },
+  "costos": {
+    "base": "416.134680",
+    "redundante": "615.674480",
+    "incremento": "199.539800",
+    "sql_base": "372.971180",
+    "sql_redundante": "511.096980"
+  },
+  "mejoras": {
+    "vm_az_costo_extra": "61.2475",
+    "sql_zr_costo_extra": "138.125800"
+  },
+  "presupuestos": {
+    "disponibilidad": "216.000",
+    "latencia": "2160.00"
+  }
+}

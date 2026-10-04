@@ -1,0 +1,15 @@
+# Archivos temporales usados para preparar evidencias
+tmp/
+
+# Borrador anterior sustituido por practicas/P02/README.md
+P02_Azure_SLA_SLO_2026.md
+
+# Material de consulta y diagramas preliminares no usados en la entrega vigente
+assets/
+OnlineSvcsConsolidatedSLA(WW)(English)(September_2026)(CR).docx
+OnlineSvcsConsolidatedSLA(WW)(Spanish)(September_2026)(CR).docx
+Practica2_SLA_SLOs_SD_2026.pdf
+SD_7CV1_Proyecto_Integrador.pdf
+
+# Metadato local asociado a los DOCX excluidos
+evidencias/P02/fuentes/huellas_contratos.json

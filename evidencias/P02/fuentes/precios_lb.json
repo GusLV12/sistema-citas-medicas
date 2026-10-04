@@ -1,0 +1,7 @@
+{
+  "fecha_consulta": "2026-10-03",
+  "urls": [
+    "https://prices.azure.com/api/retail/prices?%24filter=serviceName+eq+%27Load+Balancer%27+and+armRegionName+eq+%27eastus%27+and+priceType+eq+%27Consumption%27"
+  ],
+  "Items": []
+}
