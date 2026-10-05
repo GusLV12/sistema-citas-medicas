@@ -1,4 +1,4 @@
-# Arquitectura P02 de la agenda médica
+# Arquitectura P02. Agenda médica
 
 ## Flujo base
 
@@ -14,7 +14,8 @@ flowchart LR
     F -. marcar trabajo completado .-> SQL
 ```
 
-Líneas continuas: dependencias del paso correspondiente; punteadas: trabajo desacoplado o soporte. El DNS resuelve el destino, no retransmite HTTP. VM y SQL están en serie para confirmar la cita. Functions y Blob no participan en la respuesta de reserva.
+Líneas continuas: dependencias del paso correspondiente;
+punteadas: trabajo desacoplado o soporte. El DNS resuelve el destino, no retransmite HTTP. VM y SQL están en serie para confirmar la cita. Functions y Blob no participan en la respuesta de reserva.
 
 La API realiza la inserción de cita y outbox en la misma transacción SQL. Functions consulta trabajos pendientes cada minuto, adquiere una concesión transaccional y escribe un objeto con clave determinista por cita; marca terminado después de confirmar escritura. Un reintento no genera otra reserva. No se agrega una cola externa: la outbox está en SQL. El temporizador y el runtime necesitan una cuenta Storage del host, incluida en presupuesto y explícita en el flujo.
 
