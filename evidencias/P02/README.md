@@ -4,7 +4,7 @@ Consulta de fuentes: 03/10/2026. [Reporte](../../practicas/P02/README.md) · [co
 
 ## Contratos
 
-Las PNG corresponden al documento oficial español, edición 01/09/2026. La portada muestra la fecha y cada conjunto contiene la cláusula del servicio correspondiente. Los identificadores Alumno2/Alumno3 se actualizarán con los datos del equipo.
+Las PNG corresponden al documento oficial español, edición 01/09/2026. La portada muestra la fecha y cada conjunto contiene la cláusula del servicio correspondiente. 
 
 | Evidencia | Archivos | Qué respalda |
 |---|---|---|
