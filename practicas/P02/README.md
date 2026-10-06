@@ -2,7 +2,7 @@
 
 **Sistemas Distribuidos · 7CV1 · ESCOM · Semestre 27/1**
 
-Integrantes: Gustavo Linares Villegas, Acevedo Cardenas Anthony Gael y Alumno 3. Los dos últimos identificadores se sustituirán por sus nombres reales.
+Integrantes: Gustavo Linares Villegas, Acevedo Cardenas Anthony Gael y Bueno Rosas Lorena Marlene. Los dos últimos identificadores se sustituirán por sus nombres reales.
 Actualización: 04/10/2026.
 
 ## 1. Proyecto, alcance y fuentes
