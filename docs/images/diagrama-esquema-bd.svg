@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1110" viewBox="0 0 1600 1110" role="img" aria-labelledby="title desc">
+  <title id="title">Esquema de base de datos del sistema de citas médicas</title>
+  <desc id="desc">Diagrama entidad relación con usuarios, pacientes, médicos, disponibilidad, citas y consultas.</desc>
+  <style>
+    .canvas { fill: #f8fafc; }
+    .title { font: 700 28px Arial, sans-serif; fill: #0f172a; }
+    .subtitle { font: 400 15px Arial, sans-serif; fill: #475569; }
+    .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 10; }
+    .head-core { fill: #0f766e; } .head-catalog { fill: #2563eb; }
+    .head-schedule { fill: #7c3aed; } .head-care { fill: #be123c; }
+    .name { font: 700 15px Arial, sans-serif; fill: #ffffff; }
+    .field { font: 13px Consolas, monospace; fill: #334155; }
+    .pk { fill: #0f766e; font-weight: bold; } .fk { fill: #7c3aed; }
+    .line { stroke: #94a3b8; stroke-width: 1.5; fill: none; }
+    .card { font: 700 12px Arial, sans-serif; fill: #475569; }
+    .group { font: 700 13px Arial, sans-serif; fill: #64748b; letter-spacing: 1.2px; }
+    .note { font: 12px Arial, sans-serif; fill: #64748b; }
+  </style>
+  <rect class="canvas" width="1600" height="1110"/>
+  <text x="60" y="52" class="title">Sistema de citas médicas · Esquema relacional</text>
+  <text x="60" y="78" class="subtitle">PostgreSQL · claves UUID · disponibilidad, reservas y atención clínica</text>
+
+  <text x="60" y="125" class="group">IDENTIDAD Y PERFILES</text>
+  <text x="570" y="125" class="group">CATÁLOGOS Y ASIGNACIONES</text>
+  <text x="1095" y="125" class="group">AGENDA Y ATENCIÓN</text>
+
+  <!-- users -->
+  <g transform="translate(60 145)">
+    <rect class="box" width="270" height="184"/>
+    <path class="head-core" d="M10 0H260A10 10 0 0 1 270 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">users</text>
+    <text x="16" y="60" class="field pk">PK id</text><text x="16" y="82" class="field">email · password_hash</text>
+    <text x="16" y="104" class="field">first_name · last_name</text><text x="16" y="126" class="field">role · is_active</text>
+    <text x="16" y="148" class="field">created_at · updated_at</text><text x="16" y="170" class="field">phone</text>
+  </g>
+  <!-- patients -->
+  <g transform="translate(60 395)">
+    <rect class="box" width="270" height="162"/>
+    <path class="head-core" d="M10 0H260A10 10 0 0 1 270 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">patients</text>
+    <text x="16" y="60" class="field pk">PK id</text><text x="16" y="82" class="field fk">FK user_id → users</text>
+    <text x="16" y="104" class="field">birth_date · sex</text><text x="16" y="126" class="field">emergency_contact</text>
+    <text x="16" y="148" class="field">created_at · updated_at</text>
+  </g>
+  <!-- doctors -->
+  <g transform="translate(60 640)">
+    <rect class="box" width="270" height="184"/>
+    <path class="head-core" d="M10 0H260A10 10 0 0 1 270 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">doctors</text>
+    <text x="16" y="60" class="field pk">PK id</text><text x="16" y="82" class="field fk">FK user_id → users</text>
+    <text x="16" y="104" class="field">license_number</text><text x="16" y="126" class="field">professional_title</text>
+    <text x="16" y="148" class="field">bio · is_active</text><text x="16" y="170" class="field">created_at · updated_at</text>
+  </g>
+
+  <!-- specialties -->
+  <g transform="translate(570 145)">
+    <rect class="box" width="245" height="140"/>
+    <path class="head-catalog" d="M10 0H235A10 10 0 0 1 245 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">specialties</text>
+    <text x="16" y="60" class="field pk">PK id</text><text x="16" y="82" class="field">name · description</text>
+    <text x="16" y="104" class="field">is_active</text><text x="16" y="126" class="field">created_at · updated_at</text>
+  </g>
+  <!-- clinics -->
+  <g transform="translate(900 145)">
+    <rect class="box" width="245" height="162"/>
+    <path class="head-catalog" d="M10 0H235A10 10 0 0 1 245 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">clinics</text>
+    <text x="16" y="60" class="field pk">PK id</text><text x="16" y="82" class="field">name · phone</text>
+    <text x="16" y="104" class="field">address · timezone</text><text x="16" y="126" class="field">is_active</text>
+    <text x="16" y="148" class="field">created_at · updated_at</text>
+  </g>
+  <!-- rooms -->
+  <g transform="translate(900 370)">
+    <rect class="box" width="245" height="140"/>
+    <path class="head-catalog" d="M10 0H235A10 10 0 0 1 245 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">consulting_rooms</text>
+    <text x="16" y="60" class="field pk">PK id</text><text x="16" y="82" class="field fk">FK clinic_id → clinics</text>
+    <text x="16" y="104" class="field">name · floor · is_active</text><text x="16" y="126" class="field">created_at · updated_at</text>
+  </g>
+  <!-- doctor specialties -->
+  <g transform="translate(430 355)">
+    <rect class="box" width="285" height="140"/>
+    <path class="head-catalog" d="M10 0H275A10 10 0 0 1 285 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">doctor_specialties</text>
+    <text x="16" y="60" class="field pk">PK (doctor_id, specialty_id)</text>
+    <text x="16" y="82" class="field fk">FK doctor_id → doctors</text><text x="16" y="104" class="field fk">FK specialty_id → specialties</text>
+    <text x="16" y="126" class="field">created_at</text>
+  </g>
+  <!-- doctor clinics -->
+  <g transform="translate(760 590)">
+    <rect class="box" width="270" height="140"/>
+    <path class="head-catalog" d="M10 0H260A10 10 0 0 1 270 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">doctor_clinics</text>
+    <text x="16" y="60" class="field pk">PK (doctor_id, clinic_id)</text>
+    <text x="16" y="82" class="field fk">FK doctor_id → doctors</text><text x="16" y="104" class="field fk">FK clinic_id → clinics</text>
+    <text x="16" y="126" class="field">is_active · created_at</text>
+  </g>
+
+  <!-- availability -->
+  <g transform="translate(1095 145)">
+    <rect class="box" width="300" height="184"/>
+    <path class="head-schedule" d="M10 0H290A10 10 0 0 1 300 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">availability_rules</text>
+    <text x="16" y="60" class="field pk">PK id</text><text x="16" y="82" class="field fk">FK doctor_id → doctors</text>
+    <text x="16" y="104" class="field fk">FK clinic_id → clinics</text><text x="16" y="126" class="field">weekday · start_time · end_time</text>
+    <text x="16" y="148" class="field">slot_duration_minutes</text><text x="16" y="170" class="field">is_active · created_at</text>
+  </g>
+  <!-- unavailabilities -->
+  <g transform="translate(1095 390)">
+    <rect class="box" width="300" height="162"/>
+    <path class="head-schedule" d="M10 0H290A10 10 0 0 1 300 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">unavailabilities</text>
+    <text x="16" y="60" class="field pk">PK id</text><text x="16" y="82" class="field fk">FK doctor_id → doctors</text>
+    <text x="16" y="104" class="field">starts_at · ends_at</text><text x="16" y="126" class="field">reason</text>
+    <text x="16" y="148" class="field">created_at · updated_at</text>
+  </g>
+  <!-- appointments -->
+  <g transform="translate(1095 630)">
+    <rect class="box" width="380" height="250"/>
+    <path class="head-schedule" d="M10 0H370A10 10 0 0 1 380 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">appointments</text>
+    <text x="16" y="60" class="field pk">PK id</text><text x="16" y="82" class="field fk">FK patient_id → patients</text>
+    <text x="16" y="104" class="field fk">FK doctor_id → doctors</text><text x="16" y="126" class="field fk">FK specialty_id → specialties</text>
+    <text x="16" y="148" class="field fk">FK clinic_id → clinics</text><text x="16" y="170" class="field fk">FK consulting_room_id → consulting_rooms</text>
+    <text x="16" y="192" class="field">starts_at · ends_at · time_range</text><text x="16" y="214" class="field">status · reason · cancellation_reason</text>
+    <text x="16" y="236" class="field">created_at · updated_at</text>
+  </g>
+  <!-- consultations -->
+  <g transform="translate(570 825)">
+    <rect class="box" width="300" height="162"/>
+    <path class="head-care" d="M10 0H290A10 10 0 0 1 300 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">consultations</text>
+    <text x="16" y="60" class="field pk">PK id</text><text x="16" y="82" class="field fk">FK appointment_id → appointments</text>
+    <text x="16" y="104" class="field">notes · treatment_plan</text><text x="16" y="126" class="field">follow_up_notes</text>
+    <text x="16" y="148" class="field">created_at · updated_at</text>
+  </g>
+  <!-- history -->
+  <g transform="translate(900 825)">
+    <rect class="box" width="300" height="162"/>
+    <path class="head-care" d="M10 0H290A10 10 0 0 1 300 10V36H0V10A10 10 0 0 1 10 0Z"/>
+    <text x="16" y="24" class="name">appointment_status_history</text>
+    <text x="16" y="60" class="field pk">PK id</text><text x="16" y="82" class="field fk">FK appointment_id → appointments</text>
+    <text x="16" y="104" class="field fk">FK changed_by_user_id → users</text><text x="16" y="126" class="field">from_status · to_status</text>
+    <text x="16" y="148" class="field">note · created_at</text>
+  </g>
+
+  <!-- relationship lines -->
+  <path class="line" d="M195 329V395"/><text x="202" y="370" class="card">1 — 0..1</text>
+  <path class="line" d="M195 329V640"/><text x="202" y="620" class="card">1 — 0..1</text>
+  <path class="line" d="M330 732H410V425H430"/><text x="375" y="415" class="card">1 — N</text>
+  <path class="line" d="M570 425H540V285H692"/><text x="650" y="342" class="card">N — 1</text>
+  <path class="line" d="M1022 307V370"/><text x="1030" y="347" class="card">1 — N</text>
+  <path class="line" d="M1145 226H1095"/><text x="1054" y="217" class="card">1 — N</text>
+  <path class="line" d="M330 750H650V660H760"/><text x="650" y="650" class="card">1 — N</text>
+  <path class="line" d="M1022 307V660H1030"/><text x="1030" y="580" class="card">1 — N</text>
+  <path class="line" d="M330 475H1035V735H1095"/><text x="1025" y="725" class="card">1 — N</text>
+  <path class="line" d="M330 750H1095"/><text x="940" y="742" class="card">1 — N</text>
+  <path class="line" d="M815 215H1060V755H1095"/><text x="1045" y="745" class="card">1 — N</text>
+  <path class="line" d="M1145 440H1060V777H1095"/><text x="1052" y="800" class="card">1 — N</text>
+  <path class="line" d="M1285 880V906H870"/><text x="1020" y="898" class="card">1 — 0..1</text>
+  <path class="line" d="M1285 880V906H1200"/><text x="1210" y="898" class="card">1 — N</text>
+  <path class="line" d="M195 329H430V906H900"/><text x="445" y="897" class="card">1 — N</text>
+
+  <text x="60" y="1055" class="note">Restricciones clave: un médico debe pertenecer a la clínica y tener la especialidad seleccionada; las citas activas no pueden solaparse para médico, paciente ni consultorio.</text>
+  <text x="60" y="1080" class="note">Una consulta sólo puede registrarse cuando la cita relacionada tiene el estado completed.</text>
+</svg>
