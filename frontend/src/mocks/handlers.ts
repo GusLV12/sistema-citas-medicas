@@ -21,6 +21,19 @@ export const handlers = [
   http.get('/api/v1/appointments', ({ request }) => { const role = roleOf(request); return response(role === 'doctor' ? appointments.filter((item) => item.doctorId === 'doctor-1') : appointments) }),
   http.post('/api/v1/appointments', async ({ request }) => { const body = await request.json() as { specialtyId: string; doctorId: string; clinicId: string; slotId: string; reason?: string }; if (body.slotId === 'slot-10') return response({ message: 'Ese horario acaba de ser reservado. Elige otra opción.' }, { status: 409 }); const doctor = doctors.find((item) => item.id === body.doctorId)!; const specialty = specialties.find((item) => item.id === body.specialtyId)!; const clinic = clinics.find((item) => item.id === body.clinicId)!; const hour = Number(body.slotId.replace('slot-', '')); const appointment: Appointment = { id: crypto.randomUUID(), patientName: 'Ana López', doctorName: doctor.name, doctorId: doctor.id, specialty: specialty.name, clinic: clinic.name, startsAt: inDays(5, hour), endsAt: inDays(5, hour + 1), status: 'confirmed', reason: body.reason }; appointments = [appointment, ...appointments]; return response(appointment, { status: 201 }) }),
   http.patch('/api/v1/appointments/:id', async ({ request, params }) => { const body = await request.json() as { action: 'cancel' | 'complete' }; const index = appointments.findIndex((item) => item.id === params.id); if (index < 0) return response({ message: 'Cita no encontrada.' }, { status: 404 }); const status: AppointmentStatus = body.action === 'cancel' ? 'cancelled' : 'completed'; appointments[index] = { ...appointments[index], status }; return response(appointments[index]) }),
-  http.post('/api/v1/appointments/:id/reschedule', async ({ request, params }) => { const { replacementAppointmentId } = await request.json() as { replacementAppointmentId: string }; const index = appointments.findIndex((item) => item.id === params.id); const replacement = appointments.find((item) => item.id === replacementAppointmentId); if (index < 0 || !replacement) return response({ message: 'No se pudo reprogramar la cita.' }, { status: 404 }); appointments[index] = { ...appointments[index], status: 'rescheduled' }; return response(appointments[index]) }),
+  http.post('/api/v1/appointments/:id/reschedule', async ({ request, params }) => {
+    const body = await request.json() as { specialtyId: string; doctorId: string; clinicId: string; slotId: string; reason?: string }
+    const index = appointments.findIndex((item) => item.id === params.id)
+    const doctor = doctors.find((item) => item.id === body.doctorId)
+    const specialty = specialties.find((item) => item.id === body.specialtyId)
+    const clinic = clinics.find((item) => item.id === body.clinicId)
+    if (index < 0 || !doctor || !specialty || !clinic) return response({ message: 'No se pudo reprogramar la cita.' }, { status: 404 })
+    if (body.slotId === 'slot-10') return response({ message: 'Ese horario acaba de ser reservado. Elige otra opción.' }, { status: 409 })
+    const hour = Number(body.slotId.replace('slot-', ''))
+    const replacement: Appointment = { id: crypto.randomUUID(), patientName: 'Ana López', doctorName: doctor.name, doctorId: doctor.id, specialty: specialty.name, clinic: clinic.name, startsAt: inDays(5, hour), endsAt: inDays(5, hour + 1), status: 'confirmed', reason: body.reason }
+    appointments[index] = { ...appointments[index], status: 'rescheduled' }
+    appointments = [replacement, ...appointments]
+    return response(replacement, { status: 201 })
+  }),
   http.post('/api/v1/consultations', async ({ request }) => response(await request.json(), { status: 201 })),
 ]

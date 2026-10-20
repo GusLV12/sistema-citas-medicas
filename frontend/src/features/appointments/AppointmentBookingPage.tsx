@@ -21,10 +21,9 @@ export function AppointmentBookingPage() {
   const doctors = useQuery({ queryKey: ['doctors', specialtyId, clinicId], queryFn: () => api.doctors(specialtyId, clinicId), enabled: Boolean(specialtyId && clinicId) })
   const availability = useQuery({ queryKey: ['availability', doctorId, clinicId], queryFn: () => api.availability(doctorId, clinicId), enabled: Boolean(doctorId && clinicId) })
   const mutation = useMutation({
-    mutationFn: async () => {
-      const appointment = await api.createAppointment({ specialtyId, doctorId, clinicId, slotId, reason })
-      if (reprogrammingId) await api.rescheduleAppointment(reprogrammingId, appointment.id)
-      return appointment
+    mutationFn: () => {
+      const input = { specialtyId, doctorId, clinicId, slotId, reason }
+      return reprogrammingId ? api.rescheduleAppointment(reprogrammingId, input) : api.createAppointment(input)
     },
     onSuccess: (appointment) => { queryClient.invalidateQueries({ queryKey: ['appointments'] }); navigate(`/citas/${appointment.id}`) },
   })

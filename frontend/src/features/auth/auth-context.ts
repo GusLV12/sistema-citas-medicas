@@ -5,7 +5,7 @@ export type AuthValue = {
   user: User | null
   login: (email: string, password: string) => Promise<User>
   register: (name: string, email: string, password: string) => Promise<User>
-  logout: () => void
+  logout: () => Promise<void>
   setDemoRole: (role: UserRole) => void
 }
 
