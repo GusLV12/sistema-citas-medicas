@@ -12,3 +12,6 @@ export interface Appointment {
 }
 export interface Consultation { appointmentId: string; clinicalSummary: string; followUpAt?: string }
 export interface CreateAppointmentInput { specialtyId: string; doctorId: string; clinicId: string; slotId: string; reason?: string }
+export interface AdminDoctor { id: string; email: string; firstName: string; lastName: string; licenseNumber: string; biography?: string; isActive: boolean; defaultAppointmentMinutes: number }
+export interface CreateDoctorInput { email: string; password: string; firstName: string; lastName: string; licenseNumber: string; biography?: string }
+export interface AdminUser extends User { isActive: boolean }

@@ -1,4 +1,4 @@
-import type { Appointment, AvailabilitySlot, Clinic, Consultation, CreateAppointmentInput, Doctor, Specialty, User } from '../types/api'
+import type { AdminDoctor, AdminUser, Appointment, AvailabilitySlot, Clinic, Consultation, CreateAppointmentInput, CreateDoctorInput, Doctor, Specialty, User } from '../types/api'
 
 const baseUrl = import.meta.env.VITE_API_URL ?? '/api/v1'
 export const useMocks = import.meta.env.VITE_USE_MOCKS !== 'false'
@@ -15,7 +15,15 @@ async function ensureCsrf() {
   csrfToken = body.csrfToken ?? cookie('csrftoken')
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+async function refreshSession() {
+  await ensureCsrf()
+  const response = await fetch(`${baseUrl}/auth/refresh`, {
+    method: 'POST', credentials: 'include', headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+  })
+  return response.ok
+}
+
+async function request<T>(path: string, init: RequestInit = {}, retried = false): Promise<T> {
   const unsafe = !['GET', 'HEAD', 'OPTIONS'].includes(init.method ?? 'GET')
   if (unsafe) await ensureCsrf()
   const role = useMocks ? sessionStorage.getItem('demo-role') : null
@@ -29,6 +37,9 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     },
     ...init,
   })
+  if (response.status === 401 && !useMocks && !retried && path !== '/auth/refresh' && await refreshSession()) {
+    return request<T>(path, init, true)
+  }
   if (!response.ok) {
     const body = await response.json().catch(() => ({ message: 'No se pudo completar la solicitud.' })) as { message?: string }
     throw new Error(body.message ?? 'No se pudo completar la solicitud.')
@@ -41,6 +52,7 @@ export const api = {
   register: (name: string, email: string, password: string) => request<User>('/auth/register', { method: 'POST', body: JSON.stringify({ name, email, password }) }),
   logout: () => request<void>('/auth/logout', { method: 'POST' }),
   me: () => request<User>('/auth/me'),
+  refresh: () => request<void>('/auth/refresh', { method: 'POST' }),
   specialties: () => request<Specialty[]>('/specialties'),
   clinics: () => request<Clinic[]>('/clinics'),
   doctors: (specialtyId?: string, clinicId?: string) => request<Doctor[]>(`/doctors?specialtyId=${specialtyId ?? ''}&clinicId=${clinicId ?? ''}`),
@@ -50,4 +62,8 @@ export const api = {
   updateAppointment: (id: string, action: 'cancel' | 'complete') => request<Appointment>(`/appointments/${id}`, { method: 'PATCH', body: JSON.stringify({ action }) }),
   rescheduleAppointment: (id: string, input: CreateAppointmentInput) => request<Appointment>(`/appointments/${id}/reschedule`, { method: 'POST', body: JSON.stringify(input) }),
   createConsultation: (input: Consultation) => request<Consultation>('/consultations', { method: 'POST', body: JSON.stringify(input) }),
+  adminUsers: () => request<AdminUser[]>('/auth/admin/users/'),
+  updateAdminUser: (id: string, input: Partial<Pick<AdminUser, 'isActive'>>) => request<AdminUser>(`/auth/admin/users/${id}/`, { method: 'PATCH', body: JSON.stringify(input) }),
+  adminDoctors: () => request<AdminDoctor[]>('/auth/admin/doctors/'),
+  createDoctor: (input: CreateDoctorInput) => request<AdminDoctor>('/auth/admin/doctors/', { method: 'POST', body: JSON.stringify(input) }),
 }

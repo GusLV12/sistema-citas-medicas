@@ -42,6 +42,7 @@ DATABASES = {"default": {
     "ENGINE": "django.db.backends.postgresql", "NAME": os.getenv("POSTGRES_DB", "medical_appointments"),
     "USER": os.getenv("POSTGRES_USER", "medical"), "PASSWORD": os.getenv("POSTGRES_PASSWORD", "medical"),
     "HOST": os.getenv("POSTGRES_HOST", "localhost"), "PORT": os.getenv("POSTGRES_PORT", "5432"),
+    "OPTIONS": {"connect_timeout": int(os.getenv("POSTGRES_CONNECT_TIMEOUT", "5"))},
     "TEST": {"NAME": os.getenv("POSTGRES_TEST_DB", "test_medical_appointments")},
 }}
 AUTH_USER_MODEL = "accounts.User"

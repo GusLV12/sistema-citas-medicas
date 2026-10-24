@@ -3,6 +3,7 @@ import type { User, UserRole } from '../../types/api'
 
 export type AuthValue = {
   user: User | null
+  isRestoring: boolean
   login: (email: string, password: string) => Promise<User>
   register: (name: string, email: string, password: string) => Promise<User>
   logout: () => Promise<void>

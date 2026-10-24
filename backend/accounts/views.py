@@ -2,11 +2,14 @@ from django.conf import settings
 from django.middleware.csrf import get_token
 from rest_framework import permissions, status
 from rest_framework.response import Response
+from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from .authentication import enforce_csrf
-from .serializers import LoginSerializer, RegisterSerializer, UserSerializer
+from .permissions import IsAdmin
+from .serializers import AdminDoctorSerializer, AdminUserSerializer, LoginSerializer, RegisterSerializer, UserSerializer
+from .models import Doctor, User
 
 AUTH_COOKIE_PATH = "/api/v1/"
 
@@ -77,3 +80,15 @@ class LogoutView(APIView):
         response.delete_cookie("access_token", path=AUTH_COOKIE_PATH)
         response.delete_cookie("refresh_token", path=AUTH_COOKIE_PATH)
         return response
+
+
+class AdminUserViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdmin]
+    queryset = User.objects.all().order_by("email")
+    serializer_class = AdminUserSerializer
+
+
+class AdminDoctorViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdmin]
+    queryset = Doctor.objects.select_related("user").all().order_by("last_name", "first_name")
+    serializer_class = AdminDoctorSerializer

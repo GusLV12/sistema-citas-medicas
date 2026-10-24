@@ -6,6 +6,7 @@ const users: Record<UserRole, User> = { patient: { id: 'patient-1', name: 'Ana L
 const specialties: Specialty[] = [{ id: 'cardiology', name: 'Cardiología', description: 'Atención cardiovascular.' }, { id: 'general', name: 'Medicina general', description: 'Consulta de atención primaria.' }, { id: 'dermatology', name: 'Dermatología', description: 'Atención de piel y cabello.' }]
 const clinics: Clinic[] = [{ id: 'centro', name: 'Clínica Centro', address: 'Av. Reforma 120, Ciudad de México' }, { id: 'norte', name: 'Clínica Norte', address: 'Av. Insurgentes 450, Ciudad de México' }]
 const doctors: Doctor[] = [{ id: 'doctor-1', name: 'Dra. Sofía Ramos', specialtyIds: ['cardiology', 'general'], clinicIds: ['centro'] }, { id: 'doctor-2', name: 'Dr. Diego Torres', specialtyIds: ['dermatology'], clinicIds: ['norte', 'centro'] }]
+let adminDoctors = [{ id: 'doctor-1', email: 'medico@salud.mx', firstName: 'Sofía', lastName: 'Ramos', licenseNumber: 'CED-001', biography: '', isActive: true, defaultAppointmentMinutes: 30 }]
 let appointments: Appointment[] = [{ id: 'appointment-1', patientName: 'Ana López', doctorName: 'Dra. Sofía Ramos', doctorId: 'doctor-1', specialty: 'Cardiología', clinic: 'Clínica Centro', startsAt: inDays(3, 10), endsAt: inDays(3, 11), status: 'confirmed', reason: 'Revisión de seguimiento' }, { id: 'appointment-2', patientName: 'Ana López', doctorName: 'Dra. Sofía Ramos', doctorId: 'doctor-1', specialty: 'Medicina general', clinic: 'Clínica Centro', startsAt: inDays(1, 9), endsAt: inDays(1, 10), status: 'pending', reason: 'Consulta preventiva' }]
 const roleOf = (request: Request): UserRole => (request.headers.get('X-Demo-Role') as UserRole) || 'patient'
 const response = (data: unknown, init?: ResponseInit) => HttpResponse.json(data as never, init)
@@ -14,6 +15,14 @@ export const handlers = [
   http.post('/api/v1/auth/login', async ({ request }) => { const { email } = await request.json() as { email: string }; const user = email.includes('medico') ? users.doctor : email.includes('admin') ? users.admin : users.patient; return response(user) }),
   http.post('/api/v1/auth/register', async ({ request }) => { const { name, email } = await request.json() as { name: string; email: string }; return response({ id: crypto.randomUUID(), name, email, role: 'patient' satisfies UserRole }, { status: 201 }) }),
   http.get('/api/v1/auth/me', ({ request }) => response(users[roleOf(request)])),
+  http.get('/api/v1/auth/admin/users/', () => response(Object.values(users).map((user) => ({ ...user, isActive: true })))),
+  http.get('/api/v1/auth/admin/doctors/', () => response(adminDoctors)),
+  http.post('/api/v1/auth/admin/doctors/', async ({ request }) => {
+    const body = await request.json() as { email: string; firstName: string; lastName: string; licenseNumber: string; biography?: string }
+    const doctor = { id: crypto.randomUUID(), email: body.email, firstName: body.firstName, lastName: body.lastName, licenseNumber: body.licenseNumber, biography: body.biography ?? '', isActive: true, defaultAppointmentMinutes: 30 }
+    adminDoctors = [...adminDoctors, doctor]
+    return response(doctor, { status: 201 })
+  }),
   http.get('/api/v1/specialties', () => response(specialties)),
   http.get('/api/v1/clinics', () => response(clinics)),
   http.get('/api/v1/doctors', ({ request }) => { const url = new URL(request.url); const specialtyId = url.searchParams.get('specialtyId'); const clinicId = url.searchParams.get('clinicId'); return response(doctors.filter((doctor) => (!specialtyId || doctor.specialtyIds.includes(specialtyId)) && (!clinicId || doctor.clinicIds.includes(clinicId)))) }),
@@ -35,5 +44,11 @@ export const handlers = [
     appointments = [replacement, ...appointments]
     return response(replacement, { status: 201 })
   }),
-  http.post('/api/v1/consultations', async ({ request }) => response(await request.json(), { status: 201 })),
+  http.post('/api/v1/consultations', async ({ request }) => {
+    const body = await request.json() as { appointmentId: string; clinicalSummary: string }
+    const index = appointments.findIndex((item) => item.id === body.appointmentId)
+    if (index < 0 || appointments[index].status !== 'confirmed') return response({ message: 'Solo se puede registrar una consulta para una cita confirmada.' }, { status: 400 })
+    appointments[index] = { ...appointments[index], status: 'completed' }
+    return response({ id: crypto.randomUUID(), ...body }, { status: 201 })
+  }),
 ]
