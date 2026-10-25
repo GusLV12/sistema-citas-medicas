@@ -43,3 +43,34 @@ class AppointmentStatusHistory(models.Model):
     changed_by_user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     reason = models.CharField(max_length=500, blank=True)
     changed_at = models.DateTimeField(auto_now_add=True)
+
+
+class Notification(models.Model):
+    """Aviso interno, sin información clínica sensible."""
+    class Kind(models.TextChoices):
+        BOOKED = "booked", "Cita creada"
+        CANCELLED = "cancelled", "Cita cancelada"
+        RESCHEDULED = "rescheduled", "Cita reprogramada"
+        COMPLETED = "completed", "Cita completada"
+        NO_SHOW = "no_show", "Inasistencia"
+        REMINDER_24H = "reminder_24h", "Recordatorio de 24 horas"
+        REMINDER_2H = "reminder_2h", "Recordatorio de 2 horas"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    appointment = models.ForeignKey(Appointment, null=True, blank=True, on_delete=models.SET_NULL, related_name="notifications")
+    kind = models.CharField(max_length=20, choices=Kind.choices)
+    title = models.CharField(max_length=160)
+    body = models.CharField(max_length=500)
+    read_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=("recipient", "appointment", "kind"),
+                condition=models.Q(appointment__isnull=False),
+                name="notification_recipient_appointment_kind_unique",
+            ),
+        ]

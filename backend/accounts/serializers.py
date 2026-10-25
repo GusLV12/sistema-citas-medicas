@@ -40,6 +40,18 @@ class LoginSerializer(serializers.Serializer):
         return attrs
 
 
+class PatientProfileSerializer(serializers.ModelSerializer):
+    firstName = serializers.CharField(source="first_name", max_length=100)
+    lastName = serializers.CharField(source="last_name", max_length=100)
+    birthDate = serializers.DateField(source="birth_date", allow_null=True, required=False)
+    emergencyContactName = serializers.CharField(source="emergency_contact_name", max_length=200, required=False, allow_blank=True)
+    emergencyContactPhone = serializers.CharField(source="emergency_contact_phone", max_length=30, required=False, allow_blank=True)
+
+    class Meta:
+        model = Patient
+        fields = ("firstName", "lastName", "phone", "birthDate", "emergencyContactName", "emergencyContactPhone")
+
+
 class AdminUserSerializer(UserSerializer):
     password = serializers.CharField(min_length=8, write_only=True, required=False)
     isActive = serializers.BooleanField(source="is_active", required=False)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Appointment
+from .models import Appointment, Notification
 
 class AppointmentSerializer(serializers.ModelSerializer):
     patientName = serializers.CharField(source="patient.full_name", read_only=True)
@@ -12,9 +12,11 @@ class AppointmentSerializer(serializers.ModelSerializer):
     canWriteConsultation = serializers.SerializerMethodField()
     class Meta:
         model = Appointment
-        fields = ("id", "patientName", "doctorName", "doctorId", "specialty", "clinic", "startsAt", "endsAt", "status", "reason", "canWriteConsultation")
+        fields = ("id", "patientName", "doctorName", "doctorId", "specialty", "clinic", "startsAt", "endsAt", "status", "reason", "cancellationReason", "canWriteConsultation")
     def get_canWriteConsultation(self, appointment):
         return appointment.status == Appointment.Status.CONFIRMED
+
+    cancellationReason = serializers.CharField(source="cancellation_reason", read_only=True)
 
 class AppointmentInputSerializer(serializers.Serializer):
     specialtyId = serializers.UUIDField()
@@ -26,3 +28,13 @@ class AppointmentInputSerializer(serializers.Serializer):
 class ActionSerializer(serializers.Serializer):
     action = serializers.ChoiceField(choices=("cancel", "complete", "no_show"))
     reason = serializers.CharField(max_length=500, required=False, allow_blank=True)
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    appointmentId = serializers.UUIDField(source="appointment_id", allow_null=True, read_only=True)
+    readAt = serializers.DateTimeField(source="read_at", allow_null=True, read_only=True)
+    createdAt = serializers.DateTimeField(source="created_at", read_only=True)
+
+    class Meta:
+        model = Notification
+        fields = ("id", "appointmentId", "kind", "title", "body", "readAt", "createdAt")

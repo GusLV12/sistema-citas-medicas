@@ -7,6 +7,8 @@ import { AppointmentDetailPage } from './features/appointments/AppointmentDetail
 import { AppointmentsPage } from './features/appointments/AppointmentsPage'
 import { PatientDashboardPage } from './features/appointments/PatientDashboardPage'
 import { DoctorAgendaPage } from './features/doctor/DoctorAgendaPage'
+import { NotificationsPage } from './features/notifications/NotificationsPage'
+import { PatientProfilePage } from './features/appointments/PatientProfilePage'
 
 export default function App() {
   return <Routes>
@@ -16,9 +18,11 @@ export default function App() {
       <Route path="/paciente" element={<RequireRole roles={['patient']}><PatientDashboardPage /></RequireRole>} />
       <Route path="/paciente/reservar" element={<RequireRole roles={['patient']}><AppointmentBookingPage /></RequireRole>} />
       <Route path="/paciente/citas" element={<RequireRole roles={['patient']}><AppointmentsPage /></RequireRole>} />
+      <Route path="/paciente/perfil" element={<RequireRole roles={['patient']}><PatientProfilePage /></RequireRole>} />
       <Route path="/citas/:appointmentId" element={<AppointmentDetailPage />} />
       <Route path="/medico" element={<RequireRole roles={['doctor']}><DoctorAgendaPage /></RequireRole>} />
       <Route path="/administracion" element={<RequireRole roles={['admin']}><AdminCatalogPage /></RequireRole>} />
+      <Route path="/notificaciones" element={<NotificationsPage />} />
     </Route></Route>
     <Route path="*" element={<Navigate to="/paciente" replace />} />
   </Routes>

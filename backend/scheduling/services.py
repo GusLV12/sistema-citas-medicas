@@ -9,7 +9,7 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from accounts.models import Patient
 from catalogs.models import AvailabilityRule, DoctorClinic, DoctorSpecialty, Unavailability
-from .models import Appointment, AppointmentStatusHistory
+from .models import Appointment, AppointmentStatusHistory, Notification
 
 ACTIVE_STATUSES = (Appointment.Status.PENDING, Appointment.Status.CONFIRMED)
 ZONE = ZoneInfo("America/Mexico_City")
@@ -63,6 +63,32 @@ def available_slots(doctor_id, clinic_id, days=14):
                 current = end
     return result
 
+def _recipients(appointment):
+    return (appointment.patient.user, appointment.doctor.user)
+
+
+def create_notification(recipient, appointment, kind, title, body):
+    """Es seguro reintentar desde un comando o una transacción de agenda."""
+    Notification.objects.get_or_create(
+        recipient=recipient, appointment=appointment, kind=kind,
+        defaults={"title": title, "body": body},
+    )
+
+
+def notify_appointment(appointment, kind):
+    labels = {
+        Notification.Kind.BOOKED: ("Cita confirmada", "Se confirmó tu cita de {specialty} el {date}."),
+        Notification.Kind.CANCELLED: ("Cita cancelada", "La cita de {specialty} del {date} fue cancelada."),
+        Notification.Kind.RESCHEDULED: ("Cita reprogramada", "Una cita de {specialty} del {date} fue reprogramada."),
+        Notification.Kind.COMPLETED: ("Cita completada", "La cita de {specialty} del {date} se marcó como completada."),
+        Notification.Kind.NO_SHOW: ("Inasistencia registrada", "La cita de {specialty} del {date} se marcó como inasistencia."),
+    }
+    title, template = labels[kind]
+    body = template.format(specialty=appointment.specialty.name, date=appointment.starts_at.astimezone(ZONE).strftime("%d/%m a las %H:%M"))
+    for recipient in _recipients(appointment):
+        create_notification(recipient, appointment, kind, title, body)
+
+
 def transition(appointment, status, actor, reason=""):
     old = appointment.status
     appointment.status = status
@@ -74,6 +100,14 @@ def transition(appointment, status, actor, reason=""):
         fields += ["cancelled_at", "cancelled_by_user", "cancellation_reason"]
     appointment.save(update_fields=fields)
     AppointmentStatusHistory.objects.create(appointment=appointment, old_status=old, new_status=status, changed_by_user=actor, reason=reason)
+    notification_kind = {
+        Appointment.Status.CANCELLED: Notification.Kind.CANCELLED,
+        Appointment.Status.RESCHEDULED: Notification.Kind.RESCHEDULED,
+        Appointment.Status.COMPLETED: Notification.Kind.COMPLETED,
+        Appointment.Status.NO_SHOW: Notification.Kind.NO_SHOW,
+    }.get(status)
+    if notification_kind:
+        notify_appointment(appointment, notification_kind)
     return appointment
 
 def create_appointment(*, actor, patient, specialty_id, doctor_id, clinic_id, slot_id, reason="", rescheduled_from=None):
@@ -94,9 +128,32 @@ def create_appointment(*, actor, patient, specialty_id, doctor_id, clinic_id, sl
                 starts_at=starts_at, ends_at=ends_at, reason=reason, rescheduled_from=rescheduled_from,
             )
             AppointmentStatusHistory.objects.create(appointment=appointment, old_status=None, new_status=appointment.status, changed_by_user=actor)
+            notify_appointment(appointment, Notification.Kind.BOOKED)
             return appointment
     except IntegrityError as exc:
         raise ValidationError("El horario acaba de ocuparse. Elige otra opción.") from exc
 
 def patient_can_change(appointment):
     return appointment.starts_at >= timezone.now() + timedelta(hours=24)
+
+
+def create_due_reminders(now=None):
+    """Crea avisos de 24 h y 2 h una sola vez; puede ejecutarse cada 15 min."""
+    now = now or timezone.now()
+    created = 0
+    for kind, hours in ((Notification.Kind.REMINDER_24H, 24), (Notification.Kind.REMINDER_2H, 2)):
+        start, end = now + timedelta(hours=hours - 0.25), now + timedelta(hours=hours + 0.25)
+        appointments = Appointment.objects.select_related("patient__user", "doctor__user", "specialty").filter(
+            status__in=ACTIVE_STATUSES, starts_at__gte=start, starts_at__lt=end,
+        )
+        for appointment in appointments:
+            for recipient in _recipients(appointment):
+                _, was_created = Notification.objects.get_or_create(
+                    recipient=recipient, appointment=appointment, kind=kind,
+                    defaults={
+                        "title": "Recordatorio de cita",
+                        "body": f"Tienes una cita de {appointment.specialty.name} el {appointment.starts_at.astimezone(ZONE).strftime('%d/%m a las %H:%M')}.",
+                    },
+                )
+                created += int(was_created)
+    return created

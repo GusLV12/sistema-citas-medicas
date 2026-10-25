@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.middleware.csrf import get_token
 from rest_framework import permissions, status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.views import APIView
@@ -8,7 +9,7 @@ from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from .authentication import enforce_csrf
 from .permissions import IsAdmin
-from .serializers import AdminDoctorSerializer, AdminUserSerializer, LoginSerializer, RegisterSerializer, UserSerializer
+from .serializers import AdminDoctorSerializer, AdminUserSerializer, LoginSerializer, PatientProfileSerializer, RegisterSerializer, UserSerializer
 from .models import Doctor, User
 
 AUTH_COOKIE_PATH = "/api/v1/"
@@ -48,6 +49,22 @@ class LoginView(APIView):
 class MeView(APIView):
     def get(self, request):
         return Response(UserSerializer(request.user).data)
+
+
+class PatientProfileView(APIView):
+    def get_profile(self, request):
+        if request.user.role != User.Role.PATIENT:
+            raise PermissionDenied("Este perfil sólo está disponible para pacientes.")
+        return request.user.patient_profile
+
+    def get(self, request):
+        return Response(PatientProfileSerializer(self.get_profile(request)).data)
+
+    def patch(self, request):
+        serializer = PatientProfileSerializer(self.get_profile(request), data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 class RefreshView(APIView):
     permission_classes = [permissions.AllowAny]

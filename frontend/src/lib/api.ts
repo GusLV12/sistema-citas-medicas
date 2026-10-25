@@ -1,4 +1,4 @@
-import type { AdminDoctor, AdminUser, Appointment, AvailabilitySlot, Clinic, Consultation, CreateAppointmentInput, CreateDoctorInput, Doctor, Specialty, User } from '../types/api'
+import type { AdminDoctor, AdminUser, Appointment, AvailabilitySlot, CatalogRecord, Clinic, Consultation, CreateAppointmentInput, CreateDoctorInput, Doctor, NotificationFeed, PatientProfile, Specialty, User } from '../types/api'
 
 const baseUrl = import.meta.env.VITE_API_URL ?? '/api/v1'
 export const useMocks = import.meta.env.VITE_USE_MOCKS !== 'false'
@@ -41,8 +41,8 @@ async function request<T>(path: string, init: RequestInit = {}, retried = false)
     return request<T>(path, init, true)
   }
   if (!response.ok) {
-    const body = await response.json().catch(() => ({ message: 'No se pudo completar la solicitud.' })) as { message?: string }
-    throw new Error(body.message ?? 'No se pudo completar la solicitud.')
+    const body = await response.json().catch(() => ({ message: 'No se pudo completar la solicitud.' })) as { message?: string; detail?: string }
+    throw new Error(body.message ?? body.detail ?? 'No se pudo completar la solicitud.')
   }
   return response.status === 204 ? undefined as T : response.json() as Promise<T>
 }
@@ -57,13 +57,21 @@ export const api = {
   clinics: () => request<Clinic[]>('/clinics'),
   doctors: (specialtyId?: string, clinicId?: string) => request<Doctor[]>(`/doctors?specialtyId=${specialtyId ?? ''}&clinicId=${clinicId ?? ''}`),
   availability: (doctorId: string, clinicId: string) => request<AvailabilitySlot[]>(`/availability?doctorId=${doctorId}&clinicId=${clinicId}`),
-  appointments: () => request<Appointment[]>('/appointments'),
+  appointments: (filters: { date?: string; from?: string; to?: string; status?: string } = {}) => request<Appointment[]>(`/appointments${Object.keys(filters).length ? `?${new URLSearchParams(Object.entries(filters).filter(([, value]) => value) as [string, string][]).toString()}` : ''}`),
   createAppointment: (input: CreateAppointmentInput) => request<Appointment>('/appointments', { method: 'POST', body: JSON.stringify(input) }),
-  updateAppointment: (id: string, action: 'cancel' | 'complete') => request<Appointment>(`/appointments/${id}`, { method: 'PATCH', body: JSON.stringify({ action }) }),
+  updateAppointment: (id: string, action: 'cancel' | 'complete' | 'no_show', reason = '') => request<Appointment>(`/appointments/${id}`, { method: 'PATCH', body: JSON.stringify({ action, reason }) }),
   rescheduleAppointment: (id: string, input: CreateAppointmentInput) => request<Appointment>(`/appointments/${id}/reschedule`, { method: 'POST', body: JSON.stringify(input) }),
   createConsultation: (input: Consultation) => request<Consultation>('/consultations', { method: 'POST', body: JSON.stringify(input) }),
   adminUsers: () => request<AdminUser[]>('/auth/admin/users/'),
   updateAdminUser: (id: string, input: Partial<Pick<AdminUser, 'isActive'>>) => request<AdminUser>(`/auth/admin/users/${id}/`, { method: 'PATCH', body: JSON.stringify(input) }),
   adminDoctors: () => request<AdminDoctor[]>('/auth/admin/doctors/'),
   createDoctor: (input: CreateDoctorInput) => request<AdminDoctor>('/auth/admin/doctors/', { method: 'POST', body: JSON.stringify(input) }),
+  patientProfile: () => request<PatientProfile>('/auth/profile'),
+  updatePatientProfile: (input: Partial<PatientProfile>) => request<PatientProfile>('/auth/profile', { method: 'PATCH', body: JSON.stringify(input) }),
+  notifications: () => request<NotificationFeed>('/notifications'),
+  markNotificationRead: (id: string) => request<void>(`/notifications/${id}/read`, { method: 'PATCH' }),
+  markAllNotificationsRead: () => request<void>('/notifications/read-all', { method: 'PATCH' }),
+  adminCatalog: <T extends CatalogRecord>(resource: string) => request<T[]>(`/admin/catalogs/${resource}/`),
+  createAdminCatalog: <T extends CatalogRecord>(resource: string, input: Record<string, unknown>) => request<T>(`/admin/catalogs/${resource}/`, { method: 'POST', body: JSON.stringify(input) }),
+  updateAdminCatalog: <T extends CatalogRecord>(resource: string, id: string, input: Record<string, unknown>) => request<T>(`/admin/catalogs/${resource}/${id}/`, { method: 'PATCH', body: JSON.stringify(input) }),
 }
