@@ -27,5 +27,5 @@ jobs:
           context: .
           file: frontend/Dockerfile
           push: true
-          tags: ghcr.io/guslv12/salud-web:trial-20261104
+          tags: ghcr.io/guslv12/salud-web:trial-20261105
           labels: org.opencontainers.image.source=https://github.com/GusLV12/sistema-citas-medicas
