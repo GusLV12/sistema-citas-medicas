@@ -1,0 +1,11 @@
+.git
+.env
+.venv
+**/.env
+**/.venv
+**/node_modules
+**/dist
+**/__pycache__
+**/.pytest_cache
+tmp
+postgres_data
