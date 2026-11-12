@@ -1,6 +1,7 @@
 from datetime import time
 from django.db import DatabaseError, transaction
 from django.test import TestCase
+from rest_framework.test import APIClient
 from accounts.models import Doctor, Patient, User
 from catalogs.models import AvailabilityRule, Clinic, DoctorClinic, DoctorSpecialty, Specialty
 from consultations.models import Consultation
@@ -32,6 +33,22 @@ class SchedulingWorkflowTests(TestCase):
         self.assertEqual(appointment.status, Appointment.Status.CONFIRMED)
         with self.assertRaisesMessage(Exception, "horario acaba de ocuparse"):
             self.reserve(slot["id"])
+
+    def test_patient_can_book_with_camel_case_api_payload(self):
+        slot = available_slots(self.doctor.id, self.clinic.id)[0]
+        client = APIClient()
+        client.force_authenticate(user=self.patient_user)
+
+        response = client.post("/api/v1/appointments", {
+            "specialtyId": str(self.specialty.id),
+            "doctorId": str(self.doctor.id),
+            "clinicId": str(self.clinic.id),
+            "slotId": slot["id"],
+            "reason": "Control anual",
+        }, format="json")
+
+        self.assertEqual(response.status_code, 201, response.data)
+        self.assertEqual(response.data["reason"], "Control anual")
 
     def test_postgresql_trigger_requires_completed_appointment_for_consultation(self):
         slot = available_slots(self.doctor.id, self.clinic.id)[0]

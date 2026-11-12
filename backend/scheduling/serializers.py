@@ -19,10 +19,13 @@ class AppointmentSerializer(serializers.ModelSerializer):
     cancellationReason = serializers.CharField(source="cancellation_reason", read_only=True)
 
 class AppointmentInputSerializer(serializers.Serializer):
-    specialtyId = serializers.UUIDField()
-    doctorId = serializers.UUIDField()
-    clinicId = serializers.UUIDField()
-    slotId = serializers.CharField()
+    # La API pública usa camelCase, pero el servicio de agenda recibe los
+    # nombres Python. Sin `source`, `validated_data` conserva camelCase y el
+    # desempaquetado en create_appointment provoca un TypeError (500).
+    specialtyId = serializers.UUIDField(source="specialty_id")
+    doctorId = serializers.UUIDField(source="doctor_id")
+    clinicId = serializers.UUIDField(source="clinic_id")
+    slotId = serializers.CharField(source="slot_id")
     reason = serializers.CharField(max_length=500, required=False, allow_blank=True)
 
 class ActionSerializer(serializers.Serializer):
