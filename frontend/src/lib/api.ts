@@ -41,8 +41,8 @@ async function request<T>(path: string, init: RequestInit = {}, retried = false)
     return request<T>(path, init, true)
   }
   if (!response.ok) {
-    const body = await response.json().catch(() => ({ message: 'No se pudo completar la solicitud.' })) as { message?: string; detail?: string }
-    throw new Error(body.message ?? body.detail ?? 'No se pudo completar la solicitud.')
+    const body = await response.json().catch(() => null) as { message?: string; detail?: string } | null
+    throw new Error(body?.message ?? body?.detail ?? `La API respondió con el error ${response.status}.`)
   }
   return response.status === 204 ? undefined as T : response.json() as Promise<T>
 }
