@@ -73,6 +73,10 @@ COOKIE_SAMESITE = os.getenv("COOKIE_SAMESITE", "Lax")
 SESSION_COOKIE_SECURE = COOKIE_SECURE
 CSRF_COOKIE_SECURE = COOKIE_SECURE
 SECURE_SSL_REDIRECT = env_flag("SECURE_SSL_REDIRECT", not DEBUG)
+# Azure Container Apps termina TLS en el ingress y reenvía el esquema original.
+# Sin esta señal, Django vuelve a redirigir cada petición HTTPS a la misma URL.
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "0" if DEBUG else "31536000"))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env_flag("SECURE_HSTS_INCLUDE_SUBDOMAINS", not DEBUG)
 SECURE_CONTENT_TYPE_NOSNIFF = True
