@@ -1,7 +1,8 @@
 import type { AdminDoctor, AdminUser, Appointment, AvailabilitySlot, CatalogRecord, Clinic, Consultation, CreateAppointmentInput, CreateDoctorInput, Doctor, NotificationFeed, PatientProfile, Specialty, User } from '../types/api'
 
 const baseUrl = import.meta.env.VITE_API_URL ?? '/api/v1'
-export const useMocks = import.meta.env.VITE_USE_MOCKS !== 'false'
+// Los datos simulados son opt-in: una imagen de producción sin la variable debe hablar con la API real.
+export const useMocks = import.meta.env.VITE_USE_MOCKS === 'true'
 let csrfToken: string | undefined
 
 type ListResponse<T> = T[] | { count: number; next: string | null; previous: string | null; results: T[] }

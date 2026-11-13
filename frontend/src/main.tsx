@@ -7,7 +7,7 @@ import { AuthProvider } from './features/auth/AuthContext'
 import './index.css'
 
 async function enableMocks() {
-  if (import.meta.env.DEV && import.meta.env.VITE_USE_MOCKS !== 'false') {
+  if (import.meta.env.DEV && import.meta.env.VITE_USE_MOCKS === 'true') {
     const { worker } = await import('./mocks/browser')
     return worker.start()
   }
