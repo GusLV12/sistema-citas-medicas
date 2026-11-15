@@ -92,6 +92,22 @@ class AdminDoctorSerializer(serializers.Serializer):
     isActive = serializers.BooleanField(source="is_active", required=False)
     defaultAppointmentMinutes = serializers.IntegerField(source="default_appointment_minutes", min_value=5, max_value=240, required=False)
 
+    def validate_email(self, value):
+        users = User.objects.filter(email__iexact=value)
+        if self.instance:
+            users = users.exclude(pk=self.instance.user_id)
+        if users.exists():
+            raise serializers.ValidationError("Ya existe una cuenta con este correo.")
+        return value
+
+    def validate_licenseNumber(self, value):
+        doctors = Doctor.objects.filter(license_number=value)
+        if self.instance:
+            doctors = doctors.exclude(pk=self.instance.pk)
+        if doctors.exists():
+            raise serializers.ValidationError("Ya existe un médico con esta cédula profesional.")
+        return value
+
     def validate(self, attrs):
         if not self.instance and "password" not in attrs:
             raise serializers.ValidationError({"password": "La contraseña es obligatoria al crear un médico."})

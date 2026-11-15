@@ -8,3 +8,5 @@ export const formatDateTime = (value: string) => new Intl.DateTimeFormat('es-MX'
 }).format(new Date(value))
 
 export const canPatientChange = (startsAt: string) => new Date(startsAt).getTime() - Date.now() >= 24 * 60 * 60 * 1000
+
+export const hasAppointmentStarted = (startsAt: string) => new Date(startsAt).getTime() <= Date.now()
